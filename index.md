@@ -28,8 +28,8 @@ layout: default
 <!-- development version, includes helpful console warnings -->
 <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.min.js"></script>
 <script src="https://d3js.org/d3.v5.min.js"></script>
-<script src='/assets/js/finance.js'></script>
-<script src='/assets/js/goalSeek.js'></script>
+<script src="{{ '/assets/js/finance.js' | relative_url }}"></script>
+<script src="{{ '/assets/js/goalSeek.js' | relative_url }}"></script>
 
 <script>
     var finance = new Finance();
