@@ -1,6 +1,6 @@
 ---
 date: 8/9/2018
-layout: default
+layout: page
 ---
 
 <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap@4.5.2/dist/css/bootstrap.min.css" />
@@ -9,10 +9,12 @@ layout: default
     .line-chart {
         border: 1px solid lightgray;
     }
+
     .line {
         fill: none;
         stroke-width: 5px;
     }
+
     .legend {
         padding: 5px;
         margin: 5px;
@@ -20,9 +22,12 @@ layout: default
         background: yellow;
         box-shadow: 2px 2px 1px #888;
     }
+
     #svg-holder {
         margin: 50px 0px;
     }
+
+    [v-cloak] { display: none; }
 </style>
 
 <!-- development version, includes helpful console warnings -->
@@ -38,9 +43,7 @@ layout: default
     var xScale, yScale, xAxis, yAxis, line;
     window.onload = function(){
 
-
         function drawChart() {
-
             var svg_holder = d3.select('#svg-holder');
             svg_holder.selectAll('*').remove();
 
@@ -377,6 +380,9 @@ layout: default
                     return d3.format(',')(Math.ceil(number))
                 }
             },
+            created: function() {
+              document.getElementById('loading').remove()
+            },
             mounted: function () {
                 drawChart();
                 this.$nextTick(function() {
@@ -390,7 +396,10 @@ layout: default
 </script>
 
 {::nomarkdown}
-<div id='app'>
+
+
+
+<div>
     <p class='meta'>8/9/2018 by <a href='https://daveeargle.com'>Dave Eargle</a></p>
     <p>Use this calculator to determine how much you need to invest using one of three strategies (monthly, annually, or one-time up-front) in order to have sufficient funds for future expenses. Once the future expenses start, they continue regularly, and inflate annually, until the specified end time. I made this calculator to help me do what-if analyses for college expenses for children. But at this point, we're undecided about how much support we will provide. So this calculator is just for fun.</p>
 
@@ -398,241 +407,246 @@ layout: default
     <hr>
 
     {% raw %}
-    <form id='per-semester'>
-        <div class='form-row align-items-center'>
-            <div class='form-group col-auto'>
-                <label for=''>Cost of attendance per year right now</label>
-                <div class='input-group'>
-                    <div class='input-group-prepend'>
-                        <span class='input-group-text'>$</span>
-                    </div>
-                    <input v-model.number='initial_attendance_cost_per_year' class='form-control' type='number' step='1000'/>
-                    <div class="input-group-append">
-                        <span class="input-group-text">.00</span>
-                    </div>
-                </div>
-
-            </div>
-            <div class='form-group col-auto'>
-                <label>College cost inflation rate</label>
-                <div class='input-group'>
-                    <input v-model.number='college_inflation_rate' class='form-control' type='number' step='0.01'>
-                    <div class='input-group-append'>
-                        <span class='input-group-text'>%</span>
-                    </div>
-                </div>
-            </div>
-            <div class='col-sm-3'>
-                <small class='form-text text-muted'>Check your college financial aid website. Search for something like "[school] cost of attendance."</small>
-                <small class='form-text text-muted'>The calculator holds this amount constant within each school year, and adjusts this amount up for inflation for each new school year.</small>
-            </div>
-        </div>
-
-        <div class='form-row align-items-center'>
-            <div class='form-group col-auto'>
-                <label for=''>Start saving this year</label>
-                <input v-model.number='start_saving_year' class='form-control' id='start-save' type='number' value=''>
-            </div>
-
-            <div class='form-group col-auto'>
-                <label for=''>Start college this year</label>
-                <input v-model.number='start_college_year' class='form-control' type='number'>
-            </div>
-
-            <div class='form-group col-auto'>
-                <label for=''>Number of years to graduate</label>
-                <input v-model.number='years_to_graduate' class='form-control' type='number'>
-            </div>
-        </div>
-        <!--
-        <div class='form-group'>
-            <label for=''>Number of semesters to graduate</label>
-            <input v-model.number='semesters_to_graduate' class='form-control' type='number'>
-        </div>
-
-        <div class='form-group'>
-            <label for=''>Number of semesters per year</label>
-            <input v-model.number='semesters_per_year' class='form-control' type='number'>
-        </div>
-        -->
-
-        <div class='form-row form-group'>
-            <div class='col-auto'>
-                <label>Rate of return on investment</label>
-                <div class='input-group'>
-                    <input v-model.number='rate_of_return' class='form-control' name='rate' type="number" placeholder="1.0" step="0.5" min="0">
-                    <div class='input-group-append'>
-                        <span class='input-group-text'>%</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-        <div>
-            <h2>Investment Strategies</h2>
-
-            <p class='form-text'>Three different options.</p>
-
-            <div class='form-row align-items-center'>
-                <div class='form-group col-auto'>
-                    <label>Monthly investment strategy</label>
-                    <div class='input-group'>
-                        <div class='input-group-prepend'>
-                            <span class='input-group-text'>$</span>
-                        </div>
-                        <input v-model.number='monthly_investment' class='form-control' name='monthly_investment' type="number" placeholder="1.0" min="0" step='100'>
-                        <div class="input-group-append">
-                            <span class="input-group-text">.00</span>
-                        </div>
-                    </div>
-                </div>
-                <div class='col-sm-3'>
-                    <small class='form-text text-muted'>It is assumed that you continue to invest this amount at the beginning of each month through to the completion of college</small>
-                </div>
-            </div>
-
-            <div class='form-row align-items-center'>
-                <div class='form-group col-auto'>
-                    <label>Annual investment strategy</label>
-                    <div class='input-group'>
-                        <div class='input-group-prepend'>
-                            <span class='input-group-text'>$</span>
-                        </div>
-                        <input v-model.number='annual_investment' class='form-control' type="number" placeholder="1.0" min="0" step='500'>
-                        <div class="input-group-append">
-                            <span class="input-group-text">.00</span>
-                        </div>
-                    </div>
-                </div>
-                <div class='col-sm-3'>
-                    <small class='form-text text-muted'>It is assumed that you continue to invest this amount at the beginning of each year through to the completion of college</small>
-                </div>
-            </div>
-
-            <div class='form-row align-items-center'>
-                <div class='form-group col-auto'>
-                    <div class='input-group'>
-                        <div class='form-check'>
-                            <input class='form-check-input' type='checkbox' v-model='make_different_first_investment' />
-                            <label>Make different initial investment</label>
-                        </div>
-                    </div>
-                </div>
-                <div class='form-group col-auto'>
-                    <div class='input-group'>
-                        <div class='input-group-prepend'>
-                            <span class='input-group-text'>$</span>
-                        </div>
-                        <input v-model.number='initial_investment' class='form-control' type="number" placeholder="1.0" min="0" :disabled='!make_different_first_investment'>
-                        <div class="input-group-append">
-                            <span class="input-group-text">.00</span>
-                        </div>
-                    </div>
-                </div>
-                <div class='col-sm-3'>
-                    <small class='form-text text-muted'>You may make an initial investment that is different than the otherwise-level investments for the 'monthly' and 'annual' investment strategies.</small>
-                </div>
-            </div>
-
-            <hr/>
-
-            <div class='form-row align-items-center'>
-                <div class='form-group col-auto'>
-                    <label>One-time investment strategy</label>
-                    <div class='input-group'>
-                        <div class='input-group-prepend'>
-                            <span class='input-group-text'>$</span>
-                        </div>
-                        <input v-model.number='one_time_investment' class='form-control' type="number" placeholder="1.0" min="0" step='1000'>
-                        <div class="input-group-append">
-                            <span class="input-group-text">.00</span>
-                        </div>
-                    </div>
-                </div>
-                <div class='col-sm-3'>
-                    <small class='form-text text-muted'>A single upfront lump sum</small>
-                </div>
-            </div>
-        </div>
-
-
-
-
-        <div class='form-row align-items-center'>
-            <div class='col-auto'>
-                <input v-on:click='do_all_goal_seeks' class='btn btn-primary' type='button' id='do-goal-seek' value='Optimize Investment Strategies'>
-            </div>
-            <div class='col-sm-3'>
-                <small class='form-text text-muted'>This button uses goal seek to find the investment amounts for each of the strategies that results in a final investment value close to 0.</small>
-            </div>
-        </div>
-    </form>
-
-
-    <div id='svg-holder'></div>
-
-    <template>
-        <h2>Totals invested by method</h2>
-        <table class='table table-sm'>
-            <thead>
-                <th>Method</th>
-                <th>Total</th>
-            </thead>
-            <tbody>
-                <tr v-for='total in [
-                        {
-                            method: "monthly",
-                            amount: monthly_investment_total
-                        },
-                        {
-                            method: "annual",
-                            amount: annual_investment_total
-                        },
-                        {
-                            method: "upfront lump sum",
-                            amount: upfront_investment_total
-                        }
-                    ]'>
-                    <td>{{ total.method }}</td>
-                    <td>{{ total.amount | f_currency }}</td>
-                </tr>
-            </tbody>
-        </table>
-    </template>
-
-    <h2>Cashflow tables</h2>
-    <template v-for='cashflow in cashflow_meta' v-if='cashflow.flows.length'>
-        <a class='btn' data-toggle='collapse' v-bind:href='cashflow.href' role='button' aria-expanded='false' v-bind:aria-controls='cashflow.href'>{{ cashflow.method }}</a>
-    </template>
-    <div class='accordion' id='cashflows-container'>
-        <template v-for='cashflow in cashflow_meta' v-if='cashflow.flows.length'>
-            <div v-bind:id='cashflow.id' class='collapse' data-parent='#cashflows-container'>
-                <div class='card card-body'>
-                    <h3>{{ cashflow.method }}</h3>
-                    <table class='table table-sm'>
-                        <thead>
-                            <th>Month</th>
-                            <th>Money In</th>
-                            <th>Money Out</th>
-                            <th>Net Cashflow</th>
-                            <th>Value at end of period</th>
-                        </thead>
-                        <tbody>
-                            <tr v-for='flow in cashflow.flows'>
-                                <td>{{ flow.period }}</td>
-                                <td>{{ flow.money_in | f_currency }}</td>
-                                <td>{{ flow.money_out | f_currency }}</td>
-                                <td>{{ flow.net_cashflow | f_currency }}</td>
-                                <td>{{ flow.fv | f_currency }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </template>
+    <div id='loading' class="spinner-border" role="status">
+      <span class="sr-only">Loading...</span>
     </div>
 
+    <div id='app' v-cloak>
+        <form id='per-semester'>
+            <div class='form-row align-items-center'>
+                <div class='form-group col-auto'>
+                    <label for=''>Cost of attendance per year right now</label>
+                    <div class='input-group'>
+                        <div class='input-group-prepend'>
+                            <span class='input-group-text'>$</span>
+                        </div>
+                        <input v-model.number='initial_attendance_cost_per_year' class='form-control' type='number' step='1000'/>
+                        <div class="input-group-append">
+                            <span class="input-group-text">.00</span>
+                        </div>
+                    </div>
+
+                </div>
+                <div class='form-group col-auto'>
+                    <label>College cost inflation rate</label>
+                    <div class='input-group'>
+                        <input v-model.number='college_inflation_rate' class='form-control' type='number' step='0.01'>
+                        <div class='input-group-append'>
+                            <span class='input-group-text'>%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class='col-sm-3'>
+                    <small class='form-text text-muted'>Check your college financial aid website. Search for something like "[school] cost of attendance."</small>
+                    <small class='form-text text-muted'>The calculator holds this amount constant within each school year, and adjusts this amount up for inflation for each new school year.</small>
+                </div>
+            </div>
+
+            <div class='form-row align-items-center'>
+                <div class='form-group col-auto'>
+                    <label for=''>Start saving this year</label>
+                    <input v-model.number='start_saving_year' class='form-control' id='start-save' type='number' value=''>
+                </div>
+
+                <div class='form-group col-auto'>
+                    <label for=''>Start college this year</label>
+                    <input v-model.number='start_college_year' class='form-control' type='number'>
+                </div>
+
+                <div class='form-group col-auto'>
+                    <label for=''>Number of years to graduate</label>
+                    <input v-model.number='years_to_graduate' class='form-control' type='number'>
+                </div>
+            </div>
+            <!--
+            <div class='form-group'>
+                <label for=''>Number of semesters to graduate</label>
+                <input v-model.number='semesters_to_graduate' class='form-control' type='number'>
+            </div>
+
+            <div class='form-group'>
+                <label for=''>Number of semesters per year</label>
+                <input v-model.number='semesters_per_year' class='form-control' type='number'>
+            </div>
+            -->
+
+            <div class='form-row form-group'>
+                <div class='col-auto'>
+                    <label>Rate of return on investment</label>
+                    <div class='input-group'>
+                        <input v-model.number='rate_of_return' class='form-control' name='rate' type="number" placeholder="1.0" step="0.5" min="0">
+                        <div class='input-group-append'>
+                            <span class='input-group-text'>%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div>
+                <h2>Investment Strategies</h2>
+
+                <p class='form-text'>Three different options.</p>
+
+                <div class='form-row align-items-center'>
+                    <div class='form-group col-auto'>
+                        <label>Monthly investment strategy</label>
+                        <div class='input-group'>
+                            <div class='input-group-prepend'>
+                                <span class='input-group-text'>$</span>
+                            </div>
+                            <input v-model.number='monthly_investment' class='form-control' name='monthly_investment' type="number" placeholder="1.0" min="0" step='100'>
+                            <div class="input-group-append">
+                                <span class="input-group-text">.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class='col-sm-3'>
+                        <small class='form-text text-muted'>It is assumed that you continue to invest this amount at the beginning of each month through to the completion of college</small>
+                    </div>
+                </div>
+
+                <div class='form-row align-items-center'>
+                    <div class='form-group col-auto'>
+                        <label>Annual investment strategy</label>
+                        <div class='input-group'>
+                            <div class='input-group-prepend'>
+                                <span class='input-group-text'>$</span>
+                            </div>
+                            <input v-model.number='annual_investment' class='form-control' type="number" placeholder="1.0" min="0" step='500'>
+                            <div class="input-group-append">
+                                <span class="input-group-text">.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class='col-sm-3'>
+                        <small class='form-text text-muted'>It is assumed that you continue to invest this amount at the beginning of each year through to the completion of college</small>
+                    </div>
+                </div>
+
+                <div class='form-row align-items-center'>
+                    <div class='form-group col-auto'>
+                        <div class='input-group'>
+                            <div class='form-check'>
+                                <input class='form-check-input' type='checkbox' v-model='make_different_first_investment' />
+                                <label>Make different initial investment</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class='form-group col-auto'>
+                        <div class='input-group'>
+                            <div class='input-group-prepend'>
+                                <span class='input-group-text'>$</span>
+                            </div>
+                            <input v-model.number='initial_investment' class='form-control' type="number" placeholder="1.0" min="0" :disabled='!make_different_first_investment'>
+                            <div class="input-group-append">
+                                <span class="input-group-text">.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class='col-sm-3'>
+                        <small class='form-text text-muted'>You may make an initial investment that is different than the otherwise-level investments for the 'monthly' and 'annual' investment strategies.</small>
+                    </div>
+                </div>
+
+                <hr/>
+
+                <div class='form-row align-items-center'>
+                    <div class='form-group col-auto'>
+                        <label>One-time investment strategy</label>
+                        <div class='input-group'>
+                            <div class='input-group-prepend'>
+                                <span class='input-group-text'>$</span>
+                            </div>
+                            <input v-model.number='one_time_investment' class='form-control' type="number" placeholder="1.0" min="0" step='1000'>
+                            <div class="input-group-append">
+                                <span class="input-group-text">.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class='col-sm-3'>
+                        <small class='form-text text-muted'>A single upfront lump sum</small>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+            <div class='form-row align-items-center'>
+                <div class='col-auto'>
+                    <input v-on:click='do_all_goal_seeks' class='btn btn-primary' type='button' id='do-goal-seek' value='Optimize Investment Strategies'>
+                </div>
+                <div class='col-sm-3'>
+                    <small class='form-text text-muted'>This button uses goal seek to find the investment amounts for each of the strategies that results in a final investment value close to 0.</small>
+                </div>
+            </div>
+        </form>
+
+
+        <div id='svg-holder'></div>
+
+        <template>
+            <h2>Totals invested by method</h2>
+            <table class='table table-sm'>
+                <thead>
+                    <th>Method</th>
+                    <th>Total</th>
+                </thead>
+                <tbody>
+                    <tr v-for='total in [
+                            {
+                                method: "monthly",
+                                amount: monthly_investment_total
+                            },
+                            {
+                                method: "annual",
+                                amount: annual_investment_total
+                            },
+                            {
+                                method: "upfront lump sum",
+                                amount: upfront_investment_total
+                            }
+                        ]'>
+                        <td>{{ total.method }}</td>
+                        <td>{{ total.amount | f_currency }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </template>
+
+        <h2>Cashflow tables</h2>
+        <template v-for='cashflow in cashflow_meta' v-if='cashflow.flows.length'>
+            <a class='btn' data-toggle='collapse' v-bind:href='cashflow.href' role='button' aria-expanded='false' v-bind:aria-controls='cashflow.href'>{{ cashflow.method }}</a>
+        </template>
+        <div class='accordion' id='cashflows-container'>
+            <template v-for='cashflow in cashflow_meta' v-if='cashflow.flows.length'>
+                <div v-bind:id='cashflow.id' class='collapse' data-parent='#cashflows-container'>
+                    <div class='card card-body'>
+                        <h3>{{ cashflow.method }}</h3>
+                        <table class='table table-sm'>
+                            <thead>
+                                <th>Month</th>
+                                <th>Money In</th>
+                                <th>Money Out</th>
+                                <th>Net Cashflow</th>
+                                <th>Value at end of period</th>
+                            </thead>
+                            <tbody>
+                                <tr v-for='flow in cashflow.flows'>
+                                    <td>{{ flow.period }}</td>
+                                    <td>{{ flow.money_in | f_currency }}</td>
+                                    <td>{{ flow.money_out | f_currency }}</td>
+                                    <td>{{ flow.net_cashflow | f_currency }}</td>
+                                    <td>{{ flow.fv | f_currency }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </div>
 </div>
 {:/nomarkdown}
 
