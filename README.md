@@ -1,6 +1,24 @@
-College Financial Calculator
-============================
+# college-financial-calculator
 
-Blog post: https://daveeargle.com/2018/08/09/College-Financial-Calculator/
+## Project setup
+```
+yarn install
+```
 
-Website: https://daveeargle.com/college-financial-calculator
+### Compiles and hot-reloads for development
+```
+yarn serve
+```
+
+### Compiles and minifies for production
+```
+yarn build
+```
+
+### Lints and fixes files
+```
+yarn lint
+```
+
+### Customize configuration
+See [Configuration Reference](https://cli.vuejs.org/config/).
